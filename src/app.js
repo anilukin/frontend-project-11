@@ -75,15 +75,11 @@ export default () => {
     const url = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(u)}`;
     return axios.get(url)
       .then((response) => {
-        console.log(response);
         if (response.data.status.http_code !== 200) {
           throw new Error('errorUrl.invalidRss');
         }
         const xmlStr = response.data.contents;
         return parseDataFromRss(xmlStr);
-      })
-      .catch((er) => {
-        console.log('GGGG', er.message);
       });
   };
 
@@ -114,21 +110,22 @@ export default () => {
             return newItem;
           });
         };
-        try {
-          getDataFromRss(newUrl).then((data) => {
+        getDataFromRss(newUrl).then((data) => {
+          watchedState.form = {
+            state: 'loadedUrl',
+          };
+          watchedState.feeds = watchedState.feeds.concat(makeFeed(data));
+          watchedState.posts = watchedState.posts.concat(makePosts(data));
+          e.target.reset();
+        })
+          .catch((ex) => {
             watchedState.form = {
-              state: 'loadedUrl',
+              errors: [i18nInstance.t(ex.message)],
+              state: 'errorUrl',
             };
-            watchedState.feeds = watchedState.feeds.concat(makeFeed(data));
-            watchedState.posts = watchedState.posts.concat(makePosts(data));
-            e.target.reset();
           });
-        } catch (ex) {
-          console.log('AAA', ex.message);
-        }
       })
       .catch((ex) => {
-        console.log('!!!!', ex);
         watchedState.form = {
           errors: ex.errors,
           state: 'errorUrl',
