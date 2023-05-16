@@ -17,4 +17,93 @@ const renderForm = (st, i18nInstance) => {
   }
 };
 
-export { renderForm };
+const renderFeeds = (st) => {
+  const feeds = document.querySelector('.feeds');
+
+  feeds.textContent = '';
+
+  const feedsDiv = document.createElement('div');
+  feedsDiv.classList.add('card', 'border-0');
+
+  const titleDiv = document.createElement('div');
+  titleDiv.classList.add('card-body');
+
+  const feedsTitle = document.createElement('h2');
+  feedsTitle.textContent = 'Фиды';
+  feedsTitle.classList.add('card-title', 'h4');
+
+  const ul = document.createElement('ul');
+  ul.classList.add('list-group', 'border-0', 'rounded-0');
+
+  st.forEach((el) => {
+    const li = document.createElement('li');
+    li.classList.add('list-group-item', 'border-0', 'border-end-0');
+
+    const h3 = document.createElement('h3');
+    h3.classList.add('h6', 'm-0');
+    h3.textContent = el.title;
+
+    const p = document.createElement('p');
+    p.classList.add('m-0', 'small', 'text-black-50');
+    p.textContent = el.description;
+
+    li.append(h3);
+    li.append(p);
+    ul.append(li);
+  });
+
+  titleDiv.append(feedsTitle);
+  titleDiv.append(ul);
+  feedsDiv.append(titleDiv);
+  feeds.append(feedsDiv);
+};
+
+const renderPosts = (st) => {
+  const posts = document.querySelector('.posts');
+  posts.textContent = '';
+
+  const postsDiv = document.createElement('div');
+  postsDiv.classList.add('card', 'border-0');
+
+  const titleDiv = document.createElement('div');
+  titleDiv.classList.add('card-body');
+
+  const postsTitle = document.createElement('h2');
+  postsTitle.textContent = 'Посты';
+  postsTitle.classList.add('card-title', 'h4');
+
+  const ul = document.createElement('ul');
+  ul.classList.add('list-group', 'border-0', 'rounded-0');
+
+  st.forEach((el) => {
+    const li = document.createElement('li');
+    li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
+
+    const a = document.createElement('a');
+    a.classList.add('fw-bold');
+    a.setAttribute('href', `${el.link}`);
+    a.setAttribute('data-id', `${el.id}`);
+    a.setAttribute('target', '_blank');
+    a.setAttribute('rel', 'noopener noreferrer');
+    a.textContent = el.title;
+
+    const button = document.createElement('button');
+    button.classList.add('btn', 'btn-outline-primary', 'btn-sm');
+    button.setAttribute('type', 'button');
+    button.setAttribute('data-id', `${el.id}`);
+    button.setAttribute('data-bs-toggle', 'modal');
+    button.setAttribute('data-bs-target', '#modal');
+    button.textContent = 'Просмотр';
+
+    li.append(a);
+    li.append(button);
+    ul.append(li);
+  });
+
+  titleDiv.append(postsTitle);
+  titleDiv.append(ul);
+  postsDiv.append(titleDiv);
+  posts.append(postsDiv);
+};
+
+export { renderForm, renderFeeds, renderPosts };
