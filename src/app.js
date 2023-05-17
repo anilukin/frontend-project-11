@@ -5,6 +5,16 @@ import axios from 'axios';
 import resources from './locales/index.js';
 import { renderForm, renderFeeds, renderPosts } from './view.js';
 
+const locale = 'ru';
+
+const getBrushedUrl = (url) => {
+  const lastSymb = url.trim().slice(-1);
+  if (lastSymb === '/') {
+    return url.trim().slice(0, -1);
+  }
+  return url.trim();
+};
+
 const validate = (url, list) => {
   const formSchema = yup.string()
     .url()
@@ -12,8 +22,6 @@ const validate = (url, list) => {
 
   return formSchema.validate(url);
 };
-
-const locale = 'ru';
 
 const i18nInstance = i18next.createInstance();
 i18nInstance.init({
@@ -25,6 +33,9 @@ i18nInstance.init({
 const parseDataFromRss = (xmlString) => {
   const parser = new DOMParser();
   const doc = parser.parseFromString(xmlString, 'text/xml');
+  if (!doc.querySelector('rss')) {
+    throw new Error('errorUrl.invalidRss');
+  }
   const items = [...doc.querySelectorAll('rss>channel>item')].map((item) => {
     const title = item.querySelector('title').textContent;
     const link = item.querySelector('link').textContent;
@@ -80,6 +91,12 @@ export default () => {
         }
         const xmlStr = response.data.contents;
         return parseDataFromRss(xmlStr);
+      })
+      .catch((ex) => {
+        if (ex instanceof axios.AxiosError) {
+          throw new Error('errorUrl.network');
+        }
+        throw ex;
       });
   };
 
@@ -88,7 +105,7 @@ export default () => {
   formEl.addEventListener('submit', (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const newUrl = formData.get('url');
+    const newUrl = getBrushedUrl(formData.get('url'));
     const rssLinks = state.feeds.map((feed) => feed.link);
     validate(newUrl, rssLinks)
       .then(() => {
@@ -127,7 +144,7 @@ export default () => {
       })
       .catch((ex) => {
         watchedState.form = {
-          errors: ex.errors,
+          errors: ex.errors ?? [i18nInstance.t(ex.message)],
           state: 'errorUrl',
         };
       });
