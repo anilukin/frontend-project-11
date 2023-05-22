@@ -3,7 +3,9 @@ import * as yup from 'yup';
 import i18next from 'i18next';
 import axios from 'axios';
 import resources from './locales/index.js';
-import { renderForm, renderFeeds, renderPosts } from './view.js';
+import {
+  renderForm, renderFeeds, renderPosts,
+} from './view.js';
 
 const locale = 'ru';
 
@@ -39,7 +41,8 @@ const parseDataFromRss = (xmlString) => {
   const items = [...doc.querySelectorAll('rss>channel>item')].map((item) => {
     const title = item.querySelector('title').textContent;
     const link = item.querySelector('link').textContent;
-    return { title, link };
+    const description = item.querySelector('description').textContent;
+    return { title, link, description };
   });
 
   return {
@@ -49,7 +52,7 @@ const parseDataFromRss = (xmlString) => {
   };
 };
 
-const delay = 5000;
+const delay = 500000;
 
 export default () => {
   yup.setLocale({
@@ -68,6 +71,8 @@ export default () => {
     },
     feeds: [],
     posts: [],
+    currentPost: null,
+    visitedPostsId: [],
   };
 
   const watchedState = onChange(state, (path, value) => {
@@ -78,7 +83,7 @@ export default () => {
       renderFeeds(value);
     }
     if (path === 'posts') {
-      renderPosts(value);
+      renderPosts(value, state.visitedPostsId);
     }
   });
 
@@ -162,5 +167,13 @@ export default () => {
         };
       });
     updPosts();
+  });
+
+  const modal = document.querySelector('#modal');
+  modal.addEventListener('show.bs.modal', (ev) => {
+    const postId = ev.relatedTarget.getAttribute('data-id');
+    console.log('clickedPostId: ', postId);
+    watchedState.currentPost = postId;
+    watchedState.visitedPostsId.push(postId);
   });
 };

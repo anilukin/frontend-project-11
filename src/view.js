@@ -58,7 +58,8 @@ const renderFeeds = (st) => {
   feeds.append(feedsDiv);
 };
 
-const renderPosts = (st) => {
+const renderPosts = (st, visitedPostsId) => {
+  console.log('!!!! visitedPostsId: ', visitedPostsId);
   const posts = document.querySelector('.posts');
   posts.textContent = '';
 
@@ -80,7 +81,11 @@ const renderPosts = (st) => {
     li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
 
     const a = document.createElement('a');
-    a.classList.add('fw-bold');
+    if (visitedPostsId.includes(el.id)) {
+      a.classList.add('fw-normal');
+    } else {
+      a.classList.add('fw-bold');
+    }
     a.setAttribute('href', `${el.link}`);
     a.setAttribute('data-id', `${el.id}`);
     a.setAttribute('target', '_blank');
@@ -88,7 +93,7 @@ const renderPosts = (st) => {
     a.textContent = el.title;
 
     const button = document.createElement('button');
-    button.classList.add('btn', 'btn-outline-primary', 'btn-sm');
+    button.classList.add('btn', 'btn-outline-primary');
     button.setAttribute('type', 'button');
     button.setAttribute('data-id', `${el.id}`);
     button.setAttribute('data-bs-toggle', 'modal');
@@ -106,4 +111,6 @@ const renderPosts = (st) => {
   posts.append(postsDiv);
 };
 
-export { renderForm, renderFeeds, renderPosts };
+export {
+  renderForm, renderFeeds, renderPosts,
+};
