@@ -1,10 +1,11 @@
 import onChange from 'on-change';
+import 'bootstrap';
 import * as yup from 'yup';
 import i18next from 'i18next';
 import axios from 'axios';
 import resources from './locales/index.js';
 import {
-  renderForm, renderFeeds, renderPosts,
+  renderForm, renderFeeds, renderPosts, renderModal,
 } from './view.js';
 
 const locale = 'ru';
@@ -52,8 +53,6 @@ const parseDataFromRss = (xmlString) => {
   };
 };
 
-const delay = 500000;
-
 export default () => {
   yup.setLocale({
     string: {
@@ -71,9 +70,11 @@ export default () => {
     },
     feeds: [],
     posts: [],
-    currentPost: null,
+    currentPostId: null,
     visitedPostsId: [],
   };
+
+  const delay = 5000;
 
   const watchedState = onChange(state, (path, value) => {
     if (path === 'form') {
@@ -84,6 +85,9 @@ export default () => {
     }
     if (path === 'posts') {
       renderPosts(value, state.visitedPostsId);
+    }
+    if (path === 'currentPostId') {
+      renderModal(value, state.posts);
     }
   });
 
@@ -166,14 +170,16 @@ export default () => {
           state: 'errorUrl',
         };
       });
-    updPosts();
   });
 
-  const modal = document.querySelector('#modal');
-  modal.addEventListener('show.bs.modal', (ev) => {
-    const postId = ev.relatedTarget.getAttribute('data-id');
-    console.log('clickedPostId: ', postId);
-    watchedState.currentPost = postId;
-    watchedState.visitedPostsId.push(postId);
+  updPosts();
+
+  const postsContainer = document.querySelector('.posts');
+  postsContainer.addEventListener('click', (e) => {
+    if (e.target.nodeName === 'BUTTON' || e.target.nodeName === 'A') {
+      const postId = e.target.getAttribute('data-id');
+      watchedState.currentPostId = postId;
+      watchedState.visitedPostsId.push(postId);
+    }
   });
 };

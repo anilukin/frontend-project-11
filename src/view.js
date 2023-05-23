@@ -59,9 +59,11 @@ const renderFeeds = (st) => {
 };
 
 const renderPosts = (st, visitedPostsId) => {
-  console.log('!!!! visitedPostsId: ', visitedPostsId);
   const posts = document.querySelector('.posts');
   posts.textContent = '';
+  if (st.length === 0) {
+    return;
+  }
 
   const postsDiv = document.createElement('div');
   postsDiv.classList.add('card', 'border-0');
@@ -81,8 +83,8 @@ const renderPosts = (st, visitedPostsId) => {
     li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
 
     const a = document.createElement('a');
-    if (visitedPostsId.includes(el.id)) {
-      a.classList.add('fw-normal');
+    if (visitedPostsId.includes(el.id.toString())) {
+      a.classList.add('fw-normal', 'link-secondary');
     } else {
       a.classList.add('fw-bold');
     }
@@ -111,6 +113,24 @@ const renderPosts = (st, visitedPostsId) => {
   posts.append(postsDiv);
 };
 
+const renderModal = (currentPostId, st) => {
+  const currentPostLink = document.querySelector(`[data-id ="${currentPostId}"]`);
+  currentPostLink.classList.remove('fw-bold');
+  currentPostLink.classList.add('fw-normal', 'link-secondary');
+
+  const post = st.filter(({ id }) => id.toString() === currentPostId);
+  const [{ title, description, link }] = post;
+
+  const modalTitle = document.querySelector('.modal-title');
+  modalTitle.textContent = title;
+
+  const modalBody = document.querySelector('.modal-body');
+  modalBody.textContent = description;
+
+  const modalLink = document.querySelector('.modal-footer>a');
+  modalLink.setAttribute('href', link);
+};
+
 export {
-  renderForm, renderFeeds, renderPosts,
+  renderForm, renderFeeds, renderPosts, renderModal,
 };
