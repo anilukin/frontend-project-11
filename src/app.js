@@ -41,7 +41,7 @@ const parseDataFromRss = (xmlString) => {
 
   return {
     title: doc.querySelector('rss>channel>title').textContent,
-    description: doc.querySelector('rss>channel>title').textContent,
+    description: doc.querySelector('rss>channel>description').textContent,
     items,
   };
 };
@@ -97,7 +97,7 @@ export default () => {
     const url = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(u)}`;
     return axios.get(url)
       .then((response) => {
-        if (response.data.status.http_code !== 200) {
+        if (response.status !== 200) {
           throw new Error('errorUrl.invalidRss');
         }
         const xmlStr = response.data.contents;
