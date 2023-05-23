@@ -1,3 +1,11 @@
+const initRender = (i18nInstance) => {
+  document.getElementById('main-title').textContent = i18nInstance.t('main.title');
+  document.getElementById('main-lead').textContent = i18nInstance.t('main.lead');
+  document.getElementById('main-example').textContent = i18nInstance.t('example');
+  document.getElementById('form-submit-button').textContent = i18nInstance.t('form.submitButton');
+  document.getElementById('form-input-label').textContent = i18nInstance.t('form.labelText');
+};
+
 const renderForm = (st, i18nInstance) => {
   const formEl = document.querySelector('form');
   const input = formEl.querySelector('input');
@@ -17,7 +25,7 @@ const renderForm = (st, i18nInstance) => {
   }
 };
 
-const renderFeeds = (st) => {
+const renderFeeds = (st, i18nInstance) => {
   const feeds = document.querySelector('.feeds');
 
   feeds.textContent = '';
@@ -29,7 +37,7 @@ const renderFeeds = (st) => {
   titleDiv.classList.add('card-body');
 
   const feedsTitle = document.createElement('h2');
-  feedsTitle.textContent = 'Фиды';
+  feedsTitle.textContent = i18nInstance.t('feeds');
   feedsTitle.classList.add('card-title', 'h4');
 
   const ul = document.createElement('ul');
@@ -58,7 +66,7 @@ const renderFeeds = (st) => {
   feeds.append(feedsDiv);
 };
 
-const renderPosts = (st, visitedPostsId) => {
+const renderPosts = (st, visitedPostsId, i18nInstance) => {
   const posts = document.querySelector('.posts');
   posts.textContent = '';
   if (st.length === 0) {
@@ -72,7 +80,7 @@ const renderPosts = (st, visitedPostsId) => {
   titleDiv.classList.add('card-body');
 
   const postsTitle = document.createElement('h2');
-  postsTitle.textContent = 'Посты';
+  postsTitle.textContent = i18nInstance.t('posts.title');
   postsTitle.classList.add('card-title', 'h4');
 
   const ul = document.createElement('ul');
@@ -100,7 +108,7 @@ const renderPosts = (st, visitedPostsId) => {
     button.setAttribute('data-id', `${el.id}`);
     button.setAttribute('data-bs-toggle', 'modal');
     button.setAttribute('data-bs-target', '#modal');
-    button.textContent = 'Просмотр';
+    button.textContent = i18nInstance.t('posts.postsButton');
 
     li.append(a);
     li.append(button);
@@ -113,13 +121,19 @@ const renderPosts = (st, visitedPostsId) => {
   posts.append(postsDiv);
 };
 
-const renderModal = (currentPostId, st) => {
+const renderModal = (currentPostId, st, i18nInstance) => {
   const currentPostLink = document.querySelector(`[data-id ="${currentPostId}"]`);
   currentPostLink.classList.remove('fw-bold');
   currentPostLink.classList.add('fw-normal', 'link-secondary');
 
   const post = st.filter(({ id }) => id.toString() === currentPostId);
   const [{ title, description, link }] = post;
+
+  const closeButton = document.getElementById('modal-close');
+  closeButton.textContent = i18nInstance.t('modal.closeButton');
+
+  const readAllLink = document.getElementById('modal-read-all');
+  readAllLink.textContent = i18nInstance.t('modal.openLink');
 
   const modalTitle = document.querySelector('.modal-title');
   modalTitle.textContent = title;
@@ -132,5 +146,5 @@ const renderModal = (currentPostId, st) => {
 };
 
 export {
-  renderForm, renderFeeds, renderPosts, renderModal,
+  renderForm, renderFeeds, renderPosts, renderModal, initRender,
 };

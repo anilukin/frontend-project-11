@@ -5,7 +5,7 @@ import i18next from 'i18next';
 import axios from 'axios';
 import resources from './locales/index.js';
 import {
-  renderForm, renderFeeds, renderPosts, renderModal,
+  renderForm, renderFeeds, renderPosts, renderModal, initRender,
 } from './view.js';
 
 const locale = 'ru';
@@ -54,6 +54,7 @@ const parseDataFromRss = (xmlString) => {
 };
 
 export default () => {
+  initRender(i18nInstance);
   yup.setLocale({
     string: {
       url: i18nInstance.t('errorUrl.url'),
@@ -81,13 +82,13 @@ export default () => {
       renderForm(value, i18nInstance);
     }
     if (path === 'feeds') {
-      renderFeeds(value);
+      renderFeeds(value, i18nInstance);
     }
     if (path === 'posts') {
-      renderPosts(value, state.visitedPostsId);
+      renderPosts(value, state.visitedPostsId, i18nInstance);
     }
     if (path === 'currentPostId') {
-      renderModal(value, state.posts);
+      renderModal(value, state.posts, i18nInstance);
     }
   });
 
