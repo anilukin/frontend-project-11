@@ -26,13 +26,6 @@ const validate = (url, list) => {
   return formSchema.validate(url);
 };
 
-const i18nInstance = i18next.createInstance();
-i18nInstance.init({
-  lng: locale,
-  debug: true,
-  resources,
-});
-
 const parseDataFromRss = (xmlString) => {
   const parser = new DOMParser();
   const doc = parser.parseFromString(xmlString, 'text/xml');
@@ -54,7 +47,15 @@ const parseDataFromRss = (xmlString) => {
 };
 
 export default () => {
+  const i18nInstance = i18next.createInstance();
+  i18nInstance.init({
+    lng: locale,
+    debug: true,
+    resources,
+  });
+
   initRender(i18nInstance);
+
   yup.setLocale({
     string: {
       url: i18nInstance.t('errorUrl.url'),
